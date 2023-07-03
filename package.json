@@ -11,6 +11,8 @@
   "license": "MIT",
   "dependencies": {
     "@filecoin-renewable-energy-purchases/js-api": "^0.0.7",
-    "env-cmd": "^10.1.0"
+    "env-cmd": "^10.1.0",
+    "pg": "^8.11.1",
+    "time-stamp": "^2.2.0"
   }
 }
