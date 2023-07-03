@@ -1,4 +1,4 @@
-FROM node:lts-stretch AS development
+FROM node:18.13.0-alpine AS development
 
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm install
 COPY . .
 
-FROM node:lts-stretch AS production
+FROM node:18.13.0-alpine AS production
 
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
