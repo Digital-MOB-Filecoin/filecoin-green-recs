@@ -1,6 +1,7 @@
 import { RenewableEnergyPurchases } from '@filecoin-renewable-energy-purchases/js-api';
 import { INFO, ERROR, WARNING } from './logs.js';
 import { DB } from './db.js';
+import { fetchCountriesData } from './load.js';
 
 let db = new DB();
 let stop = false;
@@ -21,17 +22,24 @@ async function run() {
     await db.refresh_renewable_energy_view();
 };
 
+async function update_countries_data() {
+    let countriesData = await fetchCountriesData();
+    for (const data of countriesData) {
+        await db.save_country_exception(data);
+    }
+}
+
 const pause = (timeout) => new Promise(res => setTimeout(res, timeout * 1000));
 
 const mainLoop = async _ => {
     try {
         while (!stop) {
+            await update_countries_data();
             await run();
-
+            
             INFO(`Pause for 24 hours`);
             await pause(24 * 3600);
         }
-
     } catch (error) {
         ERROR(`[MainLoop] error :`);
         console.error(error);

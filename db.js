@@ -1,5 +1,6 @@
 import { Database } from './config.js';
 import { INFO, ERROR, WARNING } from './logs.js';
+import { isValidCountryCode } from './countries.js';
 import pkg from 'pg';
 
 const { Pool, types } = pkg;
@@ -97,6 +98,25 @@ export class DB {
                 }
 
             }
+        }
+    }
+
+    async save_country_exception(data) {
+        if (data && isValidCountryCode(data.country) && isValidCountryCode(data.exception)) {
+                try {
+                    let values = `'${data.country}', \
+                                  '${data.exception}'`;
+
+                    await this.Query(`
+                            INSERT INTO fil_country_exceptions (country, exception)
+                            SELECT ${values} 
+                            WHERE NOT EXISTS (
+                                SELECT 1 FROM fil_country_exceptions 
+                                WHERE country='${data.country}' AND exception='${data.exception}');`,
+                        'SaveCountryException');
+                } catch (err) {
+                    WARNING(`[SaveCountryException] -> ${err}`)
+                }
         }
     }
 
