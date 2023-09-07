@@ -47,7 +47,7 @@ export class DB {
     async save_renewable_energy(data) {
         let id = data.allocation_cid;
         let miner = data.minerID; // ?????
-        let totalEnergy = data.allocation_volume_MWh * 1000; //MWh
+        let totalEnergy = data.allocation_volume_MWh * 1000000; //Convert from MWh to Wh
 
         let start = data.reportingStart;
         let date1 = new Date(data.reportingStart);
@@ -82,7 +82,7 @@ export class DB {
                     await this.Query(`
             UPDATE fil_renewable_energy SET 
                             energyWh='${data.energyWh}'\
-                WHERE miner='${data.miner}' AND allocation_cid='${data.allocation_cid}' AND date='${data.date}' AND country=${data.country}; \
+                WHERE miner='${data.miner}' AND allocation_cid='${data.allocation_cid}' AND date=timestamp '${data.date}' AND country=${data.country}; \
             INSERT INTO fil_renewable_energy ( \
                 miner, \
                 allocation_cid, \
