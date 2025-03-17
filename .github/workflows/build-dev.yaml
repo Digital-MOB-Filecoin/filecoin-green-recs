@@ -1,18 +1,26 @@
-name: Build BE
+name: Build Dev image for Filecoin Green Recs
 
 on:
   push:
     branches: [main]
 
+# For configuration please see https://github.com/cristi-mb/build-be
+
 env:
   SLACK_CHANNEL: infra-ci-filgreen
   AWS_REGION: us-east-1
   ECR_REPOSITORY: filecoin/filecoin-green-recs
+  TAG_PREFIX: dev-
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Set timestamp
+        id: set-timestamp
+        run: |
+          echo "timestamp=$(date +%s)" >> $GITHUB_OUTPUT
+    
       - uses: cristi-mb/build-be@main
         id: build-be
         with:
@@ -22,6 +30,10 @@ jobs:
           slack-channel: ${{ env.SLACK_CHANNEL }}
           slack-token: ${{ secrets.SLACK_BOT_TOKEN }}
           ecr-repository: ${{ env.ECR_REPOSITORY }}
+          docker-path: ${{ env.DOCKER_PATH }}
+          node-version: ${{ env.NODE_VERSION }}
+          tag-prefix: ${{ env.TAG_PREFIX }}
+          tag-suffix: "-${{ steps.set-timestamp.outputs.timestamp }}"
 
       - name: Show image tag
         if: steps.build-be.outcome == 'success'
